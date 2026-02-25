@@ -6,13 +6,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schedule;
 
+
 class AuthController extends Controller
 {
     public function login(Request $request)
-{
-    if (!Auth::attempt($request->only('email', 'password'))) {
-        return response()->json(['message' => 'Invalid credentials'], 401);
-    }
+    {
+        if (!Auth::attempt($request->only('email', 'password'))) {
+            return response()->json(['message' => 'Invalid credentials'], 401);
+        }
 
     $user = Auth::user();
 
@@ -25,13 +26,15 @@ class AuthController extends Controller
     return response()->json([
         'token' => $token
     ]);
-}
+    }
 
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json(['message' => 'Logged out']);
+        return response()->json([
+            'message' => 'Logged out successfully'
+    ]);
     }
 
     public function revokeAllTokens(Request $request)
