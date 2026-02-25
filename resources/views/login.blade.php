@@ -1,6 +1,18 @@
-<form method="POST" action="{{ route('login') }}">
-    @csrf
-    <input type="text" name="email" placeholder="Email">
-    <input type="password" name="password" placeholder="Password">
-    <button type="submit">Login</button>
-</form>
+<!-- resources/views/auth/login.blade.php -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+</head>
+<body>
+    <form method="POST" action="{{ route('login') }}">
+        @csrf
+        <label>Email</label>
+        <input type="email" name="email" required autofocus><br>
+        <label>Password</label>
+        <input type="password" name="password" required><br>
+        <button type="submit">Login</button>
+    </form>
+</body>
+</html>
