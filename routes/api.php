@@ -10,26 +10,17 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 });
 
 // Authenticated user with HTTP Basic once
-Route::get('/api/user', function () {
+Route::get('/user', function () {
     return auth()->user();
 })->middleware('auth.once.basic');
 
 // Login route
-Route::post('/login', function(Request $request) {
-    $credentials = $request->validate([
-        'email' => ['required','email'],
-        'password' => ['required'],
-    ]);
+Route::post('/login', [\App\Http\Controllers\Auth\AuthController::class, 'login']);
+Route::post('/logout', [\App\Http\Controllers\Auth\AuthController::class, 'logout'])->middleware('auth:sanctum');
 
-    if (!Auth::attempt($credentials)) {
-        return response()->json(['message' => 'Invalid login'], 401);
-    }
-
-    $user = Auth::user();
-    $token = $user->createToken('api-token')->plainTextToken;
-
-    return response()->json([
-        'user' => $user,
-        'token' => $token
-    ]);
-});
+//Protecting Routes
+Route::middleware(['auth:sanctum'])->group (function(){
+    Route::apiResource('projects', \App\Http\Controllers\ProjectController::class);
+    Route::apiResource('tasks', \App\Http\Controllers\TaskController::class);
+}
+);

@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Auth;
 
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schedule;
 
@@ -47,5 +48,13 @@ class AuthController extends Controller
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('sanctum:prune-expired --hours=24')->daily();
+    }
+
+    public function session_status(Request $request)
+    {
+        return response()->json([
+            'authenticated' => $request->user() !== null,
+            'user' => $request->user()
+        ]);
     }
 }
