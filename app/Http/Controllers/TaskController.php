@@ -11,7 +11,8 @@ class TaskController extends Controller
      * Display a listing of the resource.
      */
     public function index(){
-        return Task::with(['project','assignee','reviewer','attachments'])->get();
+        return Task::with(['project','assignee','reviewer','attachments'])
+        ->select('id','project_id','title','priority','assignee_id','reviewer_id')->paginate(10);
     }
 
     /**
