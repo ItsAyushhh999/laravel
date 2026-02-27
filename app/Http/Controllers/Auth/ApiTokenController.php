@@ -10,6 +10,7 @@ class ApiTokenController extends Controller
     public function revokeAll(Request $request)
     {
         $request->user()->tokens()->delete();
+
         return response()->json(['message' => 'All tokens revoked.']);
     }
 
@@ -17,6 +18,7 @@ class ApiTokenController extends Controller
     public function revoke(Request $request, $tokenId)
     {
         $request->user()->tokens()->where('id', $tokenId)->delete();
+
         return response()->json(['message' => 'Token revoked.']);
     }
 }

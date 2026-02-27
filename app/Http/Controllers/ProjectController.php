@@ -20,6 +20,7 @@ class ProjectController extends Controller
         ]);
 
         $project = Project::create($validated);
+
         return response()->json($project, 201);
     }
 
@@ -31,12 +32,14 @@ class ProjectController extends Controller
     public function update(Request $request, Project $project)
     {
         $project->update($request->all());
+
         return response()->json($project);
     }
 
     public function destroy(Project $project)
     {
         $project->delete();
-        return response()->json(['message'=>'Project deleted']);
+
+        return response()->json(['message' => 'Project deleted']);
     }
 }

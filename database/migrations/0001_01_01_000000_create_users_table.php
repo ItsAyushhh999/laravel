@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
-            $table->enum('status', ['active', 'inactive','suspended'])->default('active');
+            $table->enum('status', ['active', 'inactive', 'suspended'])->default('active');
             $table->softDeletes();
         });
 

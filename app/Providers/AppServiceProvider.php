@@ -2,9 +2,7 @@
 
 namespace App\Providers;
 
-
 use Illuminate\Auth\Notifications\ResetPassword;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -28,5 +26,5 @@ class AppServiceProvider extends ServiceProvider
 
     }
 
-    public CONST HOME = '/dashboard';
+    public const HOME = '/dashboard';
 }

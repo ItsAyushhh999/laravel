@@ -11,7 +11,7 @@ class AttachmentController extends Controller
     {
         return Attachment::all();
     }
-    
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -21,6 +21,7 @@ class AttachmentController extends Controller
         ]);
 
         $attachment = Attachment::create($validated);
+
         return response()->json($attachment, 201);
     }
 
@@ -32,12 +33,14 @@ class AttachmentController extends Controller
     public function update(Request $request, Attachment $attachment)
     {
         $attachment->update($request->all());
+
         return response()->json($attachment);
     }
 
     public function destroy(Attachment $attachment)
     {
         $attachment->delete();
-        return response()->json(['message'=>'Attachment deleted']);
+
+        return response()->json(['message' => 'Attachment deleted']);
     }
 }

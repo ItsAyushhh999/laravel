@@ -22,7 +22,8 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->instance(LoginViewResponse::class, new class implements LoginViewResponse {
+        $this->app->instance(LoginViewResponse::class, new class implements LoginViewResponse
+        {
             public function toResponse($request)
             {
                 // Return your login view
@@ -43,9 +44,8 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::redirectUserForTwoFactorAuthenticationUsing(RedirectIfTwoFactorAuthenticatable::class);
         // Fortify::loginView(fn() => view('login'));
         // Fortify::registerView(fn() => view('register'));
-        Fortify::loginView(fn() => abort(404));
-        Fortify::registerView(fn() => abort(404));
-    
+        Fortify::loginView(fn () => abort(404));
+        Fortify::registerView(fn () => abort(404));
 
         RateLimiter::for('login', function (Request $request) {
             $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
@@ -57,6 +57,4 @@ class FortifyServiceProvider extends ServiceProvider
             return Limit::perMinute(5)->by($request->session()->get('login.id'));
         });
     }
-
-
 }

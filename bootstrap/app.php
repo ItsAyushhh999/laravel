@@ -23,18 +23,16 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->alias([
-        'abilities' => CheckAbilities::class,
-        'ability' => CheckForAnyAbility::class,
+            'abilities' => CheckAbilities::class,
+            'ability' => CheckForAnyAbility::class,
         ]);
         $middleware->statefulApi();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();
-    /*->withBroadcasting(
-        __DIR__.'/../routes/channels.php',
-        ['prefix' => 'broadcasting', 'middleware' => ['auth:sanctum']],
-    );
-    */
-    
-
+/*->withBroadcasting(
+    __DIR__.'/../routes/channels.php',
+    ['prefix' => 'broadcasting', 'middleware' => ['auth:sanctum']],
+);
+*/

@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Http\Middleware;
 
 use Closure;
@@ -16,4 +15,3 @@ class AuthenticateOnceWithBasicAuth
         return Auth::onceBasic() ?: $next($request);
     }
 }
-

@@ -8,12 +8,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Project extends Model
 {
-    use SoftDeletes, HasFactory;
+    use HasFactory, SoftDeletes;
 
-    protected $fillable=[
+    protected $fillable = [
         'name',
         'description',
     ];
+
     public function tasks()
     {
         return $this->hasMany(Task::class);

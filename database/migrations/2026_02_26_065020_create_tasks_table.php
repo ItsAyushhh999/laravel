@@ -16,13 +16,14 @@ return new class extends Migration
             $table->foreignId('project_id')->constrained()->cascadeOnDelete();
             $table->string('title');
             $table->text('description');
-            $table->enum('priority', ['normal','high','urgent']);
+            $table->enum('priority', ['normal', 'high', 'urgent']);
             $table->foreignId('assignee_id')->constrained('users');
             $table->foreignId('reviewer_id')->constrained('users');
             $table->timestamps();
             $table->softDeletes();
         });
     }
+
     /**
      * Reverse the migrations.
      */

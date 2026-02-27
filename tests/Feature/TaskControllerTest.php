@@ -63,7 +63,7 @@ test('tasks can be updated', function () {
     $updatedData = [
         'title' => 'Updated Task Title',
         'description' => 'This description has been updated.',
-        'priority' => 'high', 
+        'priority' => 'high',
         'assignee_id' => $task->assignee_id,
         'reviewer_id' => $task->reviewer_id,
     ];

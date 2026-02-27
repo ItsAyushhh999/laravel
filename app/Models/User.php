@@ -11,9 +11,10 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
+    use HasApiTokens, HasFactory, Notifiable;
+
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
-    use HasApiTokens, HasFactory, Notifiable;
     use SoftDeletes;
 
     /**
@@ -50,11 +51,13 @@ class User extends Authenticatable
         ];
     }
 
-    public function assignedTasks(){
+    public function assignedTasks()
+    {
         return $this->hasMany(Task::class, 'assignee_id');
     }
 
-    public function reviewedTasks(){
+    public function reviewedTasks()
+    {
         return $this->hasMany(Task::class, 'reviewer_id');
     }
 }

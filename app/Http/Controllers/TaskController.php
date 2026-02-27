@@ -10,9 +10,10 @@ class TaskController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(){
-        return Task::with(['project','assignee','reviewer','attachments'])
-        ->select('id','project_id','title','priority','assignee_id','reviewer_id')->paginate(10);
+    public function index()
+    {
+        return Task::with(['project', 'assignee', 'reviewer', 'attachments'])
+            ->select('id', 'project_id', 'title', 'priority', 'assignee_id', 'reviewer_id')->paginate(10);
     }
 
     /**
@@ -23,11 +24,11 @@ class TaskController extends Controller
         $validated = $request->validate(
             [
                 'project_id' => 'required|exists:projects,id',
-                'title'=> 'required|string|max:255',
-                'description'=> 'required|string',
-                'priority'=> 'required|in:normal,high,urgent',
-                'assignee_id'=> 'required|exists:users,id',
-                'reviewer_id'=> 'required|exists:users,id',
+                'title' => 'required|string|max:255',
+                'description' => 'required|string',
+                'priority' => 'required|in:normal,high,urgent',
+                'assignee_id' => 'required|exists:users,id',
+                'reviewer_id' => 'required|exists:users,id',
                 'attachments.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:2048',
             ]
         );
@@ -46,16 +47,17 @@ class TaskController extends Controller
             }
         }
 
-        $task->load(['assignee', 'reviewer','attachments']);
+        $task->load(['assignee', 'reviewer', 'attachments']);
 
-        $task->attachments->transform(function($attachment) {
-        $attachment->url = asset('storage/' . $attachment->path);
-        return $attachment;
+        $task->attachments->transform(function ($attachment) {
+            $attachment->url = asset('storage/'.$attachment->path);
+
+            return $attachment;
         });
-    
+
         return response()->json([
-        'message' => 'Task created successfully',
-        'task' => $task
+            'message' => 'Task created successfully',
+            'task' => $task,
         ], 201);
     }
 
@@ -73,13 +75,13 @@ class TaskController extends Controller
         */
 
         return response()->json([
-            'task' => $task
+            'task' => $task,
         ]);
     }
 
     /*
      * Update the specified resource in storage.
-     
+
     public function update(Request $request, Task $task)
     {
         $task->update($request->all());
@@ -87,7 +89,7 @@ class TaskController extends Controller
     }
     */
 
-        public function update(Request $request, Task $task)
+    public function update(Request $request, Task $task)
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -100,21 +102,19 @@ class TaskController extends Controller
         $task->update($validated);
 
         return response()->json([
-            'task' => $task
+            'task' => $task,
         ], 200);
     }
 
-
-    
     public function destroy(Task $task)
     {
         // Try to find the task
         $task = Task::find($task->id);
 
         // If not found, return 404 JSON response
-        if (!$task) {
+        if (! $task) {
             return response()->json([
-                'message' => 'Task not found'
+                'message' => 'Task not found',
             ], 404);
         }
 
@@ -123,8 +123,7 @@ class TaskController extends Controller
 
         // Return success message
         return response()->json([
-            'message' => 'Task deleted successfully'
+            'message' => 'Task deleted successfully',
         ]);
     }
-
 }
