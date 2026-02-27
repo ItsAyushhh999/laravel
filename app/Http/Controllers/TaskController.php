@@ -40,8 +40,8 @@ class TaskController extends Controller
                 $path = $file->storeAs('tasks', $filename, 'public');
 
                 $task->attachments()->create([
-                    'filename' => $filename,
-                    'path' => $path,
+                    'file_name' => $filename,
+                    'file_path' => $path,
                 ]);
             }
         }
@@ -77,14 +77,33 @@ class TaskController extends Controller
         ]);
     }
 
-    /**
+    /*
      * Update the specified resource in storage.
-     */
+     
     public function update(Request $request, Task $task)
     {
         $task->update($request->all());
         return response()->json($task);
     }
+    */
+
+        public function update(Request $request, Task $task)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'priority' => 'required|in:normal,high,urgent',
+            'assignee_id' => 'required|exists:users,id',
+            'reviewer_id' => 'required|exists:users,id',
+        ]);
+
+        $task->update($validated);
+
+        return response()->json([
+            'task' => $task
+        ], 200);
+    }
+
 
     
     public function destroy(Task $task)
@@ -97,15 +116,15 @@ class TaskController extends Controller
             return response()->json([
                 'message' => 'Task not found'
             ], 404);
-    }
+        }
 
-    // Delete the task
-    $task->delete();
+        // Delete the task
+        $task->delete();
 
-    // Return success message
-    return response()->json([
-        'message' => 'Task deleted successfully'
-    ]);
+        // Return success message
+        return response()->json([
+            'message' => 'Task deleted successfully'
+        ]);
     }
 
 }

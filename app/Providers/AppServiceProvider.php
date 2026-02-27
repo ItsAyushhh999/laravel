@@ -27,4 +27,6 @@ class AppServiceProvider extends ServiceProvider
         });
 
     }
+
+    public CONST HOME = '/dashboard';
 }

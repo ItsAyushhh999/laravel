@@ -42,4 +42,10 @@ Route::middleware(['auth:sanctum'])->group(function (){
     Route::delete('/projects/{project}', [\App\Http\Controllers\ProjectController::class, 'destroy']);
 });
 
+/*Route::get('/test', function () {
+    return \App\Models\Task::with('assignee', 'reviewer', 'attachments')->get();});
+*/
+
+Route::get('/tasks', [TaskController::class, 'index'])
+->middleware('auth:sanctum');
 
