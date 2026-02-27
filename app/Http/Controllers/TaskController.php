@@ -28,11 +28,35 @@ class TaskController extends Controller
                 'priority'=> 'required|in:normal,high,urgent',
                 'assignee_id'=> 'required|exists:users,id',
                 'reviewer_id'=> 'required|exists:users,id',
+                'attachments.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:2048',
             ]
         );
 
         $task = Task::create($validated);
-        return response()->json($task, 201);
+
+        if ($request->hasFile('attachments')) {
+            foreach ($request->file('attachments') as $file) {
+                $filename = time().'_'.$file->getClientOriginalName();
+                $path = $file->storeAs('tasks', $filename, 'public');
+
+                $task->attachments()->create([
+                    'filename' => $filename,
+                    'path' => $path,
+                ]);
+            }
+        }
+
+        $task->load(['assignee', 'reviewer','attachments']);
+
+        $task->attachments->transform(function($attachment) {
+        $attachment->url = asset('storage/' . $attachment->path);
+        return $attachment;
+        });
+    
+        return response()->json([
+        'message' => 'Task created successfully',
+        'task' => $task
+        ], 201);
     }
 
     /**
@@ -40,7 +64,17 @@ class TaskController extends Controller
      */
     public function show(Task $task)
     {
-        return $task->load(['project','assignee','reviewer','attachments']);
+        $task->load(['project', 'assignee', 'reviewer', 'attachments']);
+
+        /*$task->attachments->transform(function ($attachment) {
+            $attachment->url = asset('storage/' . $attachment->path);
+            return $attachment;
+        });
+        */
+
+        return response()->json([
+            'task' => $task
+        ]);
     }
 
     /**
@@ -52,13 +86,26 @@ class TaskController extends Controller
         return response()->json($task);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    
     public function destroy(Task $task)
     {
-        $task->delete();
-        return response()->json(['message'=>'Task deleted']);
+        // Try to find the task
+        $task = Task::find($task->id);
+
+        // If not found, return 404 JSON response
+        if (!$task) {
+            return response()->json([
+                'message' => 'Task not found'
+            ], 404);
+    }
+
+    // Delete the task
+    $task->delete();
+
+    // Return success message
+    return response()->json([
+        'message' => 'Task deleted successfully'
+    ]);
     }
 
 }

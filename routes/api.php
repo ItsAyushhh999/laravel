@@ -22,21 +22,24 @@ Route::post('/logout', [\App\Http\Controllers\Auth\AuthController::class, 'logou
 //Protecting Routes
 Route::middleware(['auth:sanctum'])->group (function(){
     Route::apiResource('projects', \App\Http\Controllers\ProjectController::class);
-    Route::apiResource('tasks', \App\Http\Controllers\TaskController::class);
 }
 );
 
 Route::middleware(['auth:sanctum'])->group(function () {
 
-    Route::post('/tasks', [TaskController::class, 'store'])
-        ->middleware('ability:server:update');
-
-    Route::put('/tasks/{task}', [TaskController::class, 'update'])
-        ->middleware('ability:server:update');
-
+    Route::post('/tasks', [TaskController::class, 'store']);
+    Route::get('/tasks/{task}', [TaskController::class, 'show']);
+    Route::put('/tasks/{task}', [TaskController::class, 'update']);
+    //->middleware('ability:task:update');
     Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])
-        ->middleware('ability:admin:update');
+    ->middleware('auth:sanctum');
+});
 
+Route::middleware(['auth:sanctum'])->group(function (){
+    Route::post('/projects', [\App\Http\Controllers\ProjectController::class, 'store']);
+    Route::get('/projects/{project}', [\App\Http\Controllers\ProjectController::class, 'show']);
+    Route::put('/projects/{project}', [\App\Http\Controllers\ProjectController::class, 'update']);
+    Route::delete('/projects/{project}', [\App\Http\Controllers\ProjectController::class, 'destroy']);
 });
 
 

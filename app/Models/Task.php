@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\Project;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Pest\Configuration\Project;
+
 
 class Task extends Model
 {
@@ -15,7 +16,7 @@ class Task extends Model
         'description',
         'priority',
         'assignee_id',
-        'reviewer_id',
+        'reviewer_id'
     ];
     public function project()
     {
@@ -24,12 +25,12 @@ class Task extends Model
 
     public function assignee()
     {
-        return $this->belongsTo(User::class, 'assignee_id');
+        return $this->belongsTo(User::class, 'assignee_id',);
     }
 
     public function reviewer()
     {
-        return $this->belongsTo(User::class, 'reviewer_id');
+        return $this->belongsTo(User::class, 'reviewer_id',);
     }
 
     public function attachments()
