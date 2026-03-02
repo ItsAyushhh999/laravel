@@ -27,7 +27,7 @@ class FortifyServiceProvider extends ServiceProvider
             public function toResponse($request)
             {
                 // Return your login view
-                return view('auth.login');
+                return response(view('auth.login'));
             }
         });
     }
@@ -42,8 +42,9 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::updateUserPasswordsUsing(UpdateUserPassword::class);
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
         Fortify::redirectUserForTwoFactorAuthenticationUsing(RedirectIfTwoFactorAuthenticatable::class);
-        // Fortify::loginView(fn() => view('login'));
-        // Fortify::registerView(fn() => view('register'));
+        /**
+         * @return \Illuminate\View\View|\Symfony\Component\HttpFoundation\Response
+         */
         Fortify::loginView(fn () => abort(404));
         Fortify::registerView(fn () => abort(404));
 

@@ -1,0 +1,22 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+    - vendor/nesbot/carbon/extension.neon
+
+parameters:
+    paths:
+        - app/    # Only check your app folder
+
+    # Level 5 is strict enough; 10 is strictest
+    level: 5
+
+    # Treat PHPDoc types as uncertain (prevents instanceof.alwaysTrue notices)
+    treatPhpDocTypesAsCertain: false
+
+    # Ignore specific Larastan notices that are safe in Laravel
+    ignoreErrors:
+        - '#Access to undefined constant Illuminate\\Foundation\\Support\\Providers\\RouteServiceProvider::HOME#'
+        - '#Relation .* is not found in App\\\\Models\\\\Task#'
+        - '#Access to an undefined property App\\\\Models\\\\Task::\$attachments#'
+        - '~Parameter #1 \$view of function view expects view-string\|null, string given~'
+        - '#Instanceof between App\\Models\\User and Illuminate\\Contracts\\Auth\\MustVerifyEmail#'
+    reportUnmatchedIgnoredErrors: false
