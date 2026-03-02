@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $path
  * @property string $url
  */
-
 class Attachment extends Model
 {
     protected $fillable = [
