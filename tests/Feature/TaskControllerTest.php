@@ -108,3 +108,26 @@ test('tasks can be listed', function () {
     $response->assertStatus(200);
     expect(count($response->json('data')))->toBe(3);
 });
+
+test('tasks are paginated correctly', function () {
+
+    $user = User::factory()->create();
+    Sanctum::actingAs($user);
+
+    // create 15 tasks, but per page is 10
+    Task::factory()->count(15)->create();
+
+    // page 1 should have 10 tasks
+    $response = $this->get('/api/tasks?page=1');
+    $response->assertStatus(200);
+    expect(count($response->json('data')))->toBe(10);
+    expect($response->json('current_page'))->toBe(1);
+    expect($response->json('total'))->toBe(15);
+    expect($response->json('last_page'))->toBe(2);
+
+    // page 2 should have remaining 5 tasks
+    $response = $this->get('/api/tasks?page=2');
+    $response->assertStatus(200);
+    expect(count($response->json('data')))->toBe(5);
+    expect($response->json('current_page'))->toBe(2);
+});

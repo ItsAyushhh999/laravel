@@ -9,8 +9,15 @@ class TaskController extends Controller
 {
     public function index()
     {
-        return Task::with(['project', 'assignee', 'reviewer', 'attachments', 'creator'])
+        $tasks = Task::with(['project', 'assignee', 'reviewer', 'attachments', 'creator'])
             ->select('id', 'project_id', 'title', 'priority', 'assignee_id', 'reviewer_id', 'creator_id')->paginate(10);
+
+        return response()->json([
+            'data' => $tasks->items(),
+            'total' => $tasks->total(),
+            'current_page' => $tasks->currentPage(),
+            'last_page' => $tasks->lastPage(),
+        ]);
     }
 
     public function store(Request $request)
