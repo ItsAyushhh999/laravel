@@ -19,6 +19,7 @@ return new class extends Migration
             $table->enum('priority', ['normal', 'high', 'urgent']);
             $table->foreignId('assignee_id')->constrained('users');
             $table->foreignId('reviewer_id')->constrained('users');
+            $table->foreignId('creator_id')->constrained('users')->restrictOnDelete();
             $table->timestamps();
             $table->softDeletes();
         });

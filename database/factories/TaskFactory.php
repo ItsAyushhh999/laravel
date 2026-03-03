@@ -20,6 +20,7 @@ class TaskFactory extends Factory
             'priority' => $this->faker->randomElement(['normal', 'high', 'urgent']),
             'assignee_id' => User::factory(),
             'reviewer_id' => User::factory(),
+            'creator_id' => User::factory(),
         ];
     }
 }

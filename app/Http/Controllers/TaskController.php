@@ -7,18 +7,12 @@ use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        return Task::with(['project', 'assignee', 'reviewer', 'attachments'])
-            ->select('id', 'project_id', 'title', 'priority', 'assignee_id', 'reviewer_id')->paginate(10);
+        return Task::with(['project', 'assignee', 'reviewer', 'attachments', 'creator'])
+            ->select('id', 'project_id', 'title', 'priority', 'assignee_id', 'reviewer_id', 'creator_id')->paginate(10);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validated = $request->validate(
@@ -33,7 +27,9 @@ class TaskController extends Controller
             ]
         );
 
-        $task = Task::create($validated);
+        $task = Task::create(array_merge($validated, [
+            'creator_id' => auth()->id(),
+        ]));
 
         if ($request->hasFile('attachments')) {
             foreach ($request->file('attachments') as $file) {
@@ -61,12 +57,9 @@ class TaskController extends Controller
         ], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Task $task)
     {
-        $task->load(['project', 'assignee', 'reviewer', 'attachments']);
+        $task->load(['project', 'assignee', 'reviewer', 'creator', 'comments.user', 'comments.replies.user', 'attachments']);
 
         /*$task->attachments->transform(function ($attachment) {
             $attachment->url = asset('storage/' . $attachment->path);
@@ -108,20 +101,15 @@ class TaskController extends Controller
 
     public function destroy(Task $task)
     {
-        // Try to find the task
         $task = Task::find($task->id);
 
-        // If not found, return 404 JSON response
         if (! $task) {
             return response()->json([
                 'message' => 'Task not found',
             ], 404);
         }
-
-        // Delete the task
         $task->delete();
 
-        // Return success message
         return response()->json([
             'message' => 'Task deleted successfully',
         ]);

@@ -26,6 +26,7 @@ class Task extends Model
         'priority',
         'assignee_id',
         'reviewer_id',
+        'creator_id',
     ];
 
     public function project(): BelongsTo
@@ -46,5 +47,15 @@ class Task extends Model
     public function attachments(): HasMany
     {
         return $this->hasMany(Attachment::class, 'task_id');
+    }
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class)->whereNull('parent_id');
+    }
+
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'creator_id');
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\TaskController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -52,3 +53,10 @@ Route::get('/tasks', [TaskController::class, 'index'])
 Route::get('/email/verify/{id}/{hash}', [VerifyEmailController::class, '__invoke'])
     ->middleware(['signed', 'throttle:6,1'])
     ->name('verification.verify');
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::post('/tasks/{task}/comments', [CommentController::class, 'store']);
+    Route::post('/comments/{comment}/replies', [CommentController::class, 'reply']);
+    Route::get('/tasks/{task}/comments', [CommentController::class, 'index']);
+    Route::get('/comments/{comment}/replies', [CommentController::class, 'indexReplies']);
+});
