@@ -33,6 +33,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // ->middleware('ability:task:update');
     Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])
         ->middleware('auth:sanctum');
+    Route::get('/tasks', [TaskController::class, 'index']);
 });
 
 Route::middleware(['auth:sanctum'])->group(function () {
@@ -45,9 +46,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
 /*Route::get('/test', function () {
     return \App\Models\Task::with('assignee', 'reviewer', 'attachments')->get();});
 */
-
-Route::get('/tasks', [TaskController::class, 'index'])
-    ->middleware('auth:sanctum');
 
 Route::get('/email/verify/{id}/{hash}', [VerifyEmailController::class, '__invoke'])
     ->middleware(['signed', 'throttle:6,1'])
