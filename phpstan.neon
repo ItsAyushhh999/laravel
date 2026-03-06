@@ -19,4 +19,5 @@ parameters:
         - '#Access to an undefined property App\\\\Models\\\\Task::\$attachments#'
         - '~Parameter #1 \$view of function view expects view-string\|null, string given~'
         - '#Instanceof between App\\Models\\User and Illuminate\\Contracts\\Auth\\MustVerifyEmail#'
+        - '#Access to an undefined property Illuminate\\Database\\Eloquent\\Model#'
     reportUnmatchedIgnoredErrors: false

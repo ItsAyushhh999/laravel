@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\TaskResource;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -19,7 +20,7 @@ class TaskController extends Controller
 
         $tasks = Cache::remember($cacheKey, 60, function () use ($priority, $assignee_id, $project_id) {
             $query = Task::with(['project', 'assignee', 'reviewer', 'attachments', 'creator', 'comments.user', 'comments.replies.user'])
-                ->select('id', 'project_id', 'title', 'priority', 'assignee_id', 'reviewer_id', 'creator_id');
+                ->select('id', 'project_id', 'title', 'description', 'priority', 'assignee_id', 'reviewer_id', 'creator_id');
 
             if ($priority === 'high') {
                 $query->highPriority();
@@ -41,7 +42,7 @@ class TaskController extends Controller
         });
 
         return response()->json([
-            'data' => $tasks->items(),
+            'data' => TaskResource::collection($tasks->items()),
             'total' => $tasks->total(),
             'current_page' => $tasks->currentPage(),
             'last_page' => $tasks->lastPage(),
@@ -88,7 +89,7 @@ class TaskController extends Controller
 
         return response()->json([
             'message' => 'Task created successfully',
-            'task' => $task,
+            'task' => new TaskResource($task),
         ], 201);
     }
 
@@ -100,7 +101,7 @@ class TaskController extends Controller
         });
 
         return response()->json([
-            'task' => $taskData,
+            'task' => new TaskResource($taskData),
         ]);
     }
 
@@ -117,19 +118,13 @@ class TaskController extends Controller
         $task->update($validated);
 
         return response()->json([
-            'task' => $task,
+            'task' => new TaskResource($task),
         ], 200);
     }
 
     public function destroy(Task $task)
     {
-        $task = Task::find($task->id);
-
-        if (! $task) {
-            return response()->json([
-                'message' => 'Task not found',
-            ], 404);
-        }
+        Task::findOrFail($task->id); // Ensure task exists before deletion
         $task->delete();
 
         return response()->json([
