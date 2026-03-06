@@ -66,3 +66,25 @@ test('replies for a comment can be listed', function () {
     $response->assertStatus(200);
     expect(count($response->json()))->toBe(2);
 });
+
+test('unauthenticated user cannot create comment', function () {
+    $response = $this->postJson("/api/tasks/{$this->task->id}/comments", [
+        'body' => 'This is a comment.',
+    ]);
+    $response->assertStatus(401);
+});
+
+test('comment cannot be created with empty body', function () {
+    $response = $this->actingAs($this->user, 'sanctum')->postJson("/api/tasks/{$this->task->id}/comments", [
+        'body' => '', // empty body
+    ]);
+    $response->assertStatus(422);
+});
+
+test('empty comments list returned for task with no comments', function () {
+    Sanctum::actingAs($this->user);
+
+    $response = $this->getJson("/api/tasks/{$this->task->id}/comments");
+    $response->assertStatus(200);
+    expect($response->json())->toBe([]);
+});

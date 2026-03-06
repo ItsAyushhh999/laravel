@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -28,6 +29,45 @@ class Task extends Model
         'reviewer_id',
         'creator_id',
     ];
+
+    // ─── Scopes ───────────────────────────────────────
+
+    public function scopeHighPriority(Builder $query): Builder
+    {
+        return $query->where('priority', 'high');
+    }
+
+    public function scopeUrgent(Builder $query): Builder
+    {
+        return $query->where('priority', 'urgent');
+    }
+
+    public function scopeNormal(Builder $query): Builder
+    {
+        return $query->where('priority', 'normal');
+    }
+
+    public function scopeAssignedTo(Builder $query, int $userId): Builder
+    {
+        return $query->where('assignee_id', $userId);
+    }
+
+    public function scopeReviewedBy(Builder $query, int $userId): Builder
+    {
+        return $query->where('reviewer_id', $userId);
+    }
+
+    public function scopeCreatedBy(Builder $query, int $userId): Builder
+    {
+        return $query->where('creator_id', $userId);
+    }
+
+    public function scopeForProject(Builder $query, int $projectId): Builder
+    {
+        return $query->where('project_id', $projectId);
+    }
+
+    // ─── Relationships ───────────────────────────────
 
     public function project(): BelongsTo
     {

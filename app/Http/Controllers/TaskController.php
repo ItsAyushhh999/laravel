@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\SendTaskNotification;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -12,11 +11,33 @@ class TaskController extends Controller
     public function index(Request $request)
     {
         $page = $request->get('page', 1);
+        $priority = $request->get('priority');
+        $assignee_id = $request->get('assignee');
+        $project_id = $request->get('project');
 
-        $tasks = Cache::remember("tasks:all:{$page}", 60, function () {
-            return Task::with(['project', 'assignee', 'reviewer', 'attachments', 'creator', 'comments.user', 'comments.replies.user'])
-                ->select('id', 'project_id', 'title', 'priority', 'assignee_id', 'reviewer_id', 'creator_id')
-                ->paginate(10);
+        $cacheKey = "tasks:all:{$page}:priority:{$priority}:assignee:{$assignee_id}:project:{$project_id}";
+
+        $tasks = Cache::remember($cacheKey, 60, function () use ($priority, $assignee_id, $project_id) {
+            $query = Task::with(['project', 'assignee', 'reviewer', 'attachments', 'creator', 'comments.user', 'comments.replies.user'])
+                ->select('id', 'project_id', 'title', 'priority', 'assignee_id', 'reviewer_id', 'creator_id');
+
+            if ($priority === 'high') {
+                $query->highPriority();
+            }
+            if ($priority === 'urgent') {
+                $query->urgent();
+            }
+            if ($priority === 'normal') {
+                $query->normal();
+            }
+            if ($assignee_id) {
+                $query->assignedTo($assignee_id);
+            }
+            if ($project_id) {
+                $query->forProject($project_id);
+            }
+
+            return $query->paginate(10);
         });
 
         return response()->json([
@@ -45,8 +66,6 @@ class TaskController extends Controller
             'creator_id' => auth()->id(),
         ]));
 
-        SendTaskNotification::dispatch($task, $task->assignee);
-
         if ($request->hasFile('attachments')) {
             foreach ($request->file('attachments') as $file) {
                 $filename = time().'_'.$file->getClientOriginalName();
@@ -66,8 +85,6 @@ class TaskController extends Controller
 
             return $attachment;
         });
-
-        $this->clearTaskListCache();
 
         return response()->json([
             'message' => 'Task created successfully',
@@ -99,8 +116,6 @@ class TaskController extends Controller
 
         $task->update($validated);
 
-        $this->clearTaskCache($task->id);
-
         return response()->json([
             'task' => $task,
         ], 200);
@@ -116,25 +131,9 @@ class TaskController extends Controller
             ], 404);
         }
         $task->delete();
-        $this->clearTaskCache($task->id);
 
         return response()->json([
             'message' => 'Task deleted successfully',
         ]);
-    }
-
-    // Clear all cache keys for a specific task
-    private function clearTaskCache(int $taskId)
-    {
-        Cache::forget("tasks:{$taskId}");
-        $this->clearTaskListCache();
-    }
-
-    // Cler paginated task list cache(clears first 50 pages)
-    private function clearTaskListCache()
-    {
-        for ($i = 1; $i <= 50; $i++) {
-            Cache::forget("tasks:all:page:{$i}");
-        }
     }
 }
