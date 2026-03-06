@@ -115,10 +115,20 @@ class TaskController extends Controller
             'reviewer_id' => 'required|exists:users,id',
         ]);
 
+        $previous = [
+            'title' => $task->title,
+            'description' => $task->description,
+            'priority' => $task->priority,
+            'assignee_id' => $task->assignee_id,
+            'reviewer_id' => $task->reviewer_id,
+        ];
+
         $task->update($validated);
+        $task->load(['assignee', 'reviewer', 'project', 'creator', 'attachments']);
 
         return response()->json([
-            'task' => new TaskResource($task),
+            'previous' => $previous,
+            'updated' => new TaskResource($task),
         ], 200);
     }
 

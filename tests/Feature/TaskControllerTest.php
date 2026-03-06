@@ -75,10 +75,10 @@ test('tasks can be updated', function () {
     $response->assertStatus(200);
 
     // Assert that the response contains updated data
-    expect($response->json('task.id'))->toBe($task->id);
-    expect($response->json('task.title'))->toBe($updatedData['title']);
-    expect($response->json('task.description'))->toBe($updatedData['description']);
-    expect($response->json('task.priority'))->toBe($updatedData['priority']);
+    expect($response->json('updated.id'))->toBe($task->id);
+    expect($response->json('updated.title'))->toBe($updatedData['title']);
+    expect($response->json('updated.description'))->toBe($updatedData['description']);
+    expect($response->json('updated.priority'))->toBe($updatedData['priority']);
 });
 
 test('tasks can be deleted', function () {
