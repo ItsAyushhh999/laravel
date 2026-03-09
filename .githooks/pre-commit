@@ -1,0 +1,20 @@
+#!/bin/bash
+# Pre-commit hook for Laravel: PHPStan, Pint, and tests
+
+set -e  # Exit immediately if a command fails
+
+echo "Running Larastan PHPStan check..."
+./vendor/bin/phpstan analyse
+echo "PHPStan passed!"
+
+echo "Running Laravel Pint for code style..."
+./vendor/bin/pint
+# Stage Pint-fixed files automatically
+git add .
+
+echo "Running Pest/PHPUnit tests..."
+./vendor/bin/pest --stop-on-failure
+echo "All tests passed!"
+
+echo "All checks passed! Commit can proceed."
+exit 0

@@ -43,8 +43,6 @@ class TaskObserver
     // Fires AFTER update — use captured original here
     public function updated(Task $task): void
     {
-        $previous = self::$previousData[$task->id] ?? [];
-
         if (! isset(self::$previousData[$task->id])) {
             return;
         }
