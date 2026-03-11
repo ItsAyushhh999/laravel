@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\CommentCreated;
+use App\Events\ReplyCreated;
 use App\Models\Comment;
 use App\Models\Task;
 use Illuminate\Http\Request;
@@ -14,10 +16,16 @@ class CommentController extends Controller
             'body' => 'required|string',
         ]);
 
+        /** @var \App\Models\Comment $comment */
         $comment = $task->comments()->create([
             'user_id' => $request->input('user_id', $request->user()->id),
             'body' => $request->input('body'),
         ]);
+
+        // Load task relationship for broadcastOn()
+        $comment->load('task');
+
+        broadcast(new CommentCreated($comment));
 
         return response()->json($comment, 201);
     }
@@ -29,12 +37,18 @@ class CommentController extends Controller
             'user_id' => 'nullable|exists:users,id',
         ]);
 
+        /** @var \App\Models\Comment $reply */
         $reply = $comment->replies()->create([
             'task_id' => $comment->task_id,
             'user_id' => $request->input('user_id', $request->user()->id),
             'parent_id' => $comment->id,
             'body' => $request->input('body'),
         ]);
+
+        // Load parent relationship for broadcastOn()
+        $reply->load('parent');
+
+        broadcast(new ReplyCreated($reply));
 
         return response()->json($reply, 201);
     }

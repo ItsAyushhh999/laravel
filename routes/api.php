@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\TaskController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 
 // Authenticated user with Sanctum token
@@ -57,3 +58,5 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/tasks/{task}/comments', [CommentController::class, 'index']);
     Route::get('/comments/{comment}/replies', [CommentController::class, 'indexReplies']);
 });
+
+Broadcast::routes(['middleware' => ['auth:sanctum']]);

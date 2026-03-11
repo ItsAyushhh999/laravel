@@ -1,5 +1,7 @@
 {
   "devDependencies": {
-    "chokidar": "^5.0.0"
+    "chokidar": "^5.0.0",
+    "laravel-echo": "^2.3.1",
+    "pusher-js": "^8.4.0"
   }
 }

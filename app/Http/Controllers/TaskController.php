@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\TaskCreated;
+use App\Events\TaskUpdated;
 use App\Http\Resources\TaskResource;
 use App\Models\Task;
 use Illuminate\Http\Request;
@@ -80,6 +82,7 @@ class TaskController extends Controller
         }
 
         $task->load(['assignee', 'reviewer', 'attachments']);
+        broadcast(new TaskCreated($task));
 
         $task->attachments->transform(function ($attachment) {
             $attachment->url = asset('storage/'.$attachment->path);
@@ -125,6 +128,7 @@ class TaskController extends Controller
 
         $task->update($validated);
         $task->load(['assignee', 'reviewer', 'project', 'creator', 'attachments']);
+        broadcast(new TaskUpdated($task, $previous));
 
         return response()->json([
             'previous' => $previous,
@@ -135,7 +139,12 @@ class TaskController extends Controller
     public function destroy(Task $task)
     {
         Task::findOrFail($task->id); // Ensure task exists before deletion
+        $assignee_id = (int) $task->assignee_id;
+        $reviewer_id = (int) $task->reviewer_id;
+        $taskTitle = $task->title;
+        $TaskId = (int) $task->id;
         $task->delete();
+        broadcast(new \App\Events\TaskDeleted($TaskId, $assignee_id, $reviewer_id, $taskTitle));
 
         return response()->json([
             'message' => 'Task deleted successfully',
