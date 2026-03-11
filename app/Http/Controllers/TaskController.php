@@ -6,6 +6,10 @@ use App\Events\TaskCreated;
 use App\Events\TaskUpdated;
 use App\Http\Resources\TaskResource;
 use App\Models\Task;
+use App\Models\User;
+use App\Notifications\TaskAssignedNotification;
+use App\Notifications\TaskDeletedNotification;
+use App\Notifications\TaskUpdatedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
@@ -84,6 +88,11 @@ class TaskController extends Controller
         $task->load(['assignee', 'reviewer', 'attachments']);
         broadcast(new TaskCreated($task));
 
+        $assignee = User::find($task->assignee_id);
+        $reviewer = User::find($task->reviewer_id);
+        $assignee->notify(new TaskAssignedNotification($task));
+        $reviewer->notify(new TaskAssignedNotification($task));
+
         $task->attachments->transform(function ($attachment) {
             $attachment->url = asset('storage/'.$attachment->path);
 
@@ -130,6 +139,9 @@ class TaskController extends Controller
         $task->load(['assignee', 'reviewer', 'project', 'creator', 'attachments']);
         broadcast(new TaskUpdated($task, $previous));
 
+        $users = User::whereIn('id', [$task->assignee_id, $task->reviewer_id, $task->creator_id])->get();
+        \Illuminate\Support\Facades\Notification::send($users, new TaskUpdatedNotification($task));
+
         return response()->json([
             'previous' => $previous,
             'updated' => new TaskResource($task),
@@ -138,13 +150,17 @@ class TaskController extends Controller
 
     public function destroy(Task $task)
     {
-        Task::findOrFail($task->id); // Ensure task exists before deletion
         $assignee_id = (int) $task->assignee_id;
         $reviewer_id = (int) $task->reviewer_id;
         $taskTitle = $task->title;
         $TaskId = (int) $task->id;
         $task->delete();
         broadcast(new \App\Events\TaskDeleted($TaskId, $assignee_id, $reviewer_id, $taskTitle));
+
+        $assignee = User::find($assignee_id);
+        $reviewer = User::find($reviewer_id);
+        $assignee->notify(new TaskDeletedNotification($TaskId, $taskTitle));
+        $reviewer->notify(new TaskDeletedNotification($TaskId, $taskTitle));
 
         return response()->json([
             'message' => 'Task deleted successfully',

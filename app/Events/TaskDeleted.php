@@ -16,7 +16,7 @@ class TaskDeleted implements ShouldBroadcast
      * Create a new event instance.
      */
     public function __construct(
-        public int $task,
+        public int $taskId,
         public int $assignee_id,
         public int $reviewer_id,
         public string $taskTitle)
@@ -40,7 +40,7 @@ class TaskDeleted implements ShouldBroadcast
     public function broadcastWith(): array
     {
         return [
-            'id' => $this->task,
+            'id' => $this->taskId,
             'title' => $this->taskTitle,
             'message' => 'A task has been deleted.',
         ];

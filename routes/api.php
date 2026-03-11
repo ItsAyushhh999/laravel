@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\TaskController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Broadcast;
@@ -31,9 +32,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/tasks', [TaskController::class, 'store']);
     Route::get('/tasks/{task}', [TaskController::class, 'show']);
     Route::put('/tasks/{task}', [TaskController::class, 'update']);
-    // ->middleware('ability:task:update');
-    Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])
-        ->middleware('auth:sanctum');
+    Route::delete('/tasks/{task}', [TaskController::class, 'destroy']);
     Route::get('/tasks', [TaskController::class, 'index']);
 });
 
@@ -43,10 +42,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('/projects/{project}', [\App\Http\Controllers\ProjectController::class, 'update']);
     Route::delete('/projects/{project}', [\App\Http\Controllers\ProjectController::class, 'destroy']);
 });
-
-/*Route::get('/test', function () {
-    return \App\Models\Task::with('assignee', 'reviewer', 'attachments')->get();});
-*/
 
 Route::get('/email/verify/{id}/{hash}', [VerifyEmailController::class, '__invoke'])
     ->middleware(['signed', 'throttle:6,1'])
@@ -60,3 +55,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
 });
 
 Broadcast::routes(['middleware' => ['auth:sanctum']]);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::get('/notifications/all', [NotificationController::class, 'all']);
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
+});

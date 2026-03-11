@@ -6,6 +6,9 @@ use App\Events\CommentCreated;
 use App\Events\ReplyCreated;
 use App\Models\Comment;
 use App\Models\Task;
+use App\Models\User;
+use App\Notifications\CommentCreatedNotification;
+use App\Notifications\ReplyCreatedNotification;
 use Illuminate\Http\Request;
 
 class CommentController extends Controller
@@ -26,6 +29,10 @@ class CommentController extends Controller
         $comment->load('task');
 
         broadcast(new CommentCreated($comment));
+
+        $task = $comment->task;
+        $users = User::whereIn('id', [$task->assignee_id, $task->reviewer_id, $task->creator_id])->where('id', '!=', auth()->id())->get();
+        \Illuminate\Support\Facades\Notification::send($users, new CommentCreatedNotification($comment));
 
         return response()->json($comment, 201);
     }
@@ -49,6 +56,11 @@ class CommentController extends Controller
         $reply->load('parent');
 
         broadcast(new ReplyCreated($reply));
+
+        $originalCommenter = User::find($reply->parent->user_id);
+        if ($originalCommenter->id !== auth()->id()) {
+            $originalCommenter->notify(new ReplyCreatedNotification($reply));
+        }
 
         return response()->json($reply, 201);
     }
