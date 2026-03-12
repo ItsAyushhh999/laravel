@@ -4,6 +4,7 @@ use App\Models\Project;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
 
@@ -11,6 +12,15 @@ beforeEach(function () {
 
     $this->user = User::factory()->create();
     $this->project = Project::factory()->create();
+
+    Http::fake([
+        'jsonplaceholder.typicode.com/*' => Http::response([
+            'id' => 1,
+            'title' => 'Fake Post',
+            'body' => 'Fake body',
+            'userId' => 1,
+        ], 200),
+    ]);
 
 });
 

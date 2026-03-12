@@ -34,6 +34,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('/tasks/{task}', [TaskController::class, 'update']);
     Route::delete('/tasks/{task}', [TaskController::class, 'destroy']);
     Route::get('/tasks', [TaskController::class, 'index']);
+
+    // batch routes
+    Route::post('/posts/batch/fetch', [TaskController::class, 'getManyPosts']);
+    Route::post('/posts/batch/create', [TaskController::class, 'createManyPosts']);
 });
 
 Route::middleware(['auth:sanctum'])->group(function () {
