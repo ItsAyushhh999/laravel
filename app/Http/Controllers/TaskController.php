@@ -10,17 +10,11 @@ use App\Models\User;
 use App\Notifications\TaskAssignedNotification;
 use App\Notifications\TaskDeletedNotification;
 use App\Notifications\TaskUpdatedNotification;
-use App\Services\JsonPlaceholderService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
 class TaskController extends Controller
 {
-    public function __construct(private JsonPlaceholderService $placeholder)
-    {
-        //
-    }
-
     public function index(Request $request)
     {
         $page = $request->get('page', 1);
@@ -53,14 +47,11 @@ class TaskController extends Controller
             return $query->paginate(10);
         });
 
-        $externalPosts = $this->placeholder->getPosts();
-
         return response()->json([
             'data' => TaskResource::collection($tasks->items()),
             'total' => $tasks->total(),
             'current_page' => $tasks->currentPage(),
             'last_page' => $tasks->lastPage(),
-            'external_posts' => $externalPosts,
         ]);
     }
 
@@ -108,16 +99,9 @@ class TaskController extends Controller
             return $attachment;
         });
 
-        $externalPosts = $this->placeholder->createPost([
-            'title' => $task->title,
-            'body' => $task->description,
-            'userId' => auth()->id(),
-        ]);
-
         return response()->json([
             'message' => 'Task created successfully',
             'task' => new TaskResource($task),
-            'external_post' => $externalPosts,
         ], 201);
     }
 
@@ -128,11 +112,8 @@ class TaskController extends Controller
                 ->find($task->id);
         });
 
-        $externalPosts = $this->placeholder->getPosts();
-
         return response()->json([
             'task' => new TaskResource($taskData),
-            'external_posts' => $externalPosts,
         ]);
     }
 
@@ -184,44 +165,5 @@ class TaskController extends Controller
         return response()->json([
             'message' => 'Task deleted successfully',
         ]);
-    }
-
-    public function getManyPosts(Request $request)
-    {
-        $request->validate([
-            'ids' => 'required|array',
-            'ids.*' => 'required|integer',
-        ]);
-
-        $posts = $this->placeholder->getManyPosts($request->ids);
-
-        return response()->json([
-            'count' => count($posts),
-            'posts' => $posts,
-        ]);
-    }
-
-    public function createManyPosts(Request $request)
-    {
-        $request->validate([
-            'posts' => 'required|array',
-            'posts.*.title' => 'required|string',
-            'posts.*.body' => 'required|string',
-        ]);
-
-        $externalPosts = $this->placeholder->createManyPosts(
-            collect($request->posts)->map(function ($post) {
-                return [
-                    'title' => $post['title'],
-                    'body' => $post['body'],
-                    'userId' => auth()->id(),
-                ];
-            })->toArray()
-        );
-
-        return response()->json([
-            'message' => 'Posts created successfully',
-            'external_posts' => $externalPosts,
-        ], 201);
     }
 }
