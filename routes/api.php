@@ -8,6 +8,7 @@ use App\Http\Controllers\TaskController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 
 // Authenticated user with Sanctum token
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
@@ -86,4 +87,12 @@ Route::prefix('placeholder')->group(function () {
 
     // Combined
     Route::get('/users/{userId}/fetch-and-process', [JsonPlaceholderController::class, 'fetchAndProcess']);
+});
+
+// For testing localstack
+Route::get('/test-s3', function () {
+    Storage::disk('s3')->put('hello.txt', 'LocalStack is working!');
+    $exists = Storage::disk('s3')->exists('hello.txt');
+
+    return response()->json(['s3_working' => $exists]);
 });
