@@ -5,6 +5,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\JsonPlaceholderController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\TaskController;
+use App\Services\SnsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
@@ -95,4 +96,12 @@ Route::get('/test-s3', function () {
     $exists = Storage::disk('s3')->exists('hello.txt');
 
     return response()->json(['s3_working' => $exists]);
+});
+
+// For testing SNS
+Route::get('/test-sns', function () {
+    $sns = new SnsService;
+    $result = $sns->publish('Hello from Laravel SNS!', 'Test Notification');
+
+    return response()->json(['message_id' => $result['MessageId']]);
 });

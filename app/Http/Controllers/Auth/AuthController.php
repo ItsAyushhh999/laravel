@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Services\SnsService;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -16,6 +17,9 @@ class AuthController extends Controller
         }
 
         $user = Auth::user();
+
+        $sns = new SnsService;
+        $sns->publish('User logged in: '.$user->email, 'User Login');
 
         // Give specific ability
         $token = $user->createToken(
