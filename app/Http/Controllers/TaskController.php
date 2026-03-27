@@ -15,6 +15,10 @@ use Illuminate\Support\Facades\Cache;
 
 class TaskController extends Controller
 {
+    // =================================
+    // Show all tasks
+    // =================================
+
     public function index(Request $request)
     {
         $page = $request->get('page', 1);
@@ -54,6 +58,10 @@ class TaskController extends Controller
             'last_page' => $tasks->lastPage(),
         ]);
     }
+
+    // ===================================
+    // Create tasks
+    // ===================================
 
     public function store(Request $request)
     {
@@ -105,6 +113,10 @@ class TaskController extends Controller
         ], 201);
     }
 
+    // ============================
+    // Show a desired task
+    // ============================
+
     public function show(Task $task)
     {
         $taskData = Cache::remember("tasks:{$task->id}", 60, function () use ($task) {
@@ -116,6 +128,10 @@ class TaskController extends Controller
             'task' => new TaskResource($taskData),
         ]);
     }
+
+    // ===============================
+    // Update tasks
+    // ===============================
 
     public function update(Request $request, Task $task)
     {
@@ -147,6 +163,10 @@ class TaskController extends Controller
             'updated' => new TaskResource($task),
         ], 200);
     }
+
+    // =========================
+    // Delete Tasks
+    // =========================
 
     public function destroy(Task $task)
     {

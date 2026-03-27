@@ -7,10 +7,18 @@ use Illuminate\Http\Request;
 
 class AttachmentController extends Controller
 {
+    // ==============================
+    // Show all attachments
+    // ==============================
+
     public function index()
     {
         return Attachment::all();
     }
+
+    // ================================
+    // Create an attachment details
+    // ================================
 
     public function store(Request $request)
     {
@@ -25,10 +33,18 @@ class AttachmentController extends Controller
         return response()->json($attachment, 201);
     }
 
+    // ========================================
+    // Show attachemnt by their task id
+    // ========================================
+
     public function show(Attachment $attachment)
     {
         return $attachment;
     }
+
+    // ========================================
+    // Update attachment details
+    // ========================================
 
     public function update(Request $request, Attachment $attachment)
     {
@@ -36,6 +52,10 @@ class AttachmentController extends Controller
 
         return response()->json($attachment);
     }
+
+    // ========================================
+    // Delete an attachment file
+    // ========================================
 
     public function destroy(Attachment $attachment)
     {

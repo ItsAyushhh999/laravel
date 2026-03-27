@@ -14,6 +14,7 @@ class TaskResource extends JsonResource
         $creator = $this->creator instanceof \App\Models\User ? $this->creator : null;
 
         return [
+            // task details
             'id' => $this->id,
             'title' => $this->title,
             'description' => $this->description,
@@ -22,27 +23,32 @@ class TaskResource extends JsonResource
                 'id' => $this->project->id,
                 'name' => $this->project->name,
             ],
+            // assigne details
             'assignee' => [
                 'id' => $this->assignee->id,
                 'name' => $this->assignee->name,
                 'email' => $this->assignee->email,
             ],
+            // reviewer details
             'reviewer' => [
                 'id' => $this->reviewer->id,
                 'name' => $this->reviewer->name,
                 'email' => $this->reviewer->email,
             ],
+            // creator details
             'creator' => [
                 /** @var \App\Models\User $creator */
                 'id' => $this->creator->id,
                 'name' => $this->creator->name,
                 'email' => $this->creator->email,
             ],
+            // attachment details
             'attachments' => $this->attachments->map(fn ($a) => [
                 'id' => $a->id,
                 'file_name' => $a->file_name,
                 'url' => asset('storage/'.$a->file_path),
             ]),
+            // comment details
             'comments' => CommentResource::collection($this->whenLoaded('comments')),
             'created_at' => $this->created_at?->toDateTimeString(),
             'updated_at' => $this->updated_at?->toDateTimeString(),

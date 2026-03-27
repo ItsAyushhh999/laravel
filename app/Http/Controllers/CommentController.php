@@ -13,6 +13,10 @@ use Illuminate\Http\Request;
 
 class CommentController extends Controller
 {
+    // ===============================================
+    // Create a comment
+    // ===============================================
+
     public function store(Request $request, Task $task)
     {
         $request->validate([
@@ -36,6 +40,10 @@ class CommentController extends Controller
 
         return response()->json($comment, 201);
     }
+
+    // =====================================================
+    // Reply to a comment
+    // =====================================================
 
     public function reply(Request $request, Comment $comment)
     {
@@ -65,6 +73,10 @@ class CommentController extends Controller
         return response()->json($reply, 201);
     }
 
+    // =========================================
+    // Show al comments with details
+    // =========================================
+
     public function index(Task $task)
     {
         $comments = Comment::with([
@@ -80,6 +92,10 @@ class CommentController extends Controller
 
         return response()->json($comments);
     }
+
+    // ============================================
+    // Show all replies to a comment
+    // ============================================
 
     public function indexReplies(Comment $comment)
     {

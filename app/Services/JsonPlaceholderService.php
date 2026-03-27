@@ -10,6 +10,10 @@ class JsonPlaceholderService
 {
     protected string $baseUrl = 'https://jsonplaceholder.typicode.com';
 
+    // ================================
+    // Get postst by their id
+    // ================================
+
     public function getPost(int $id): array
     {
         $response = Http::baseUrl($this->baseUrl)
@@ -26,6 +30,10 @@ class JsonPlaceholderService
         ];
     }
 
+    // ==================================
+    // Delete a post
+    // ==================================
+
     public function deletePost(int $id): bool
     {
         $response = Http::baseUrl($this->baseUrl)
@@ -36,6 +44,10 @@ class JsonPlaceholderService
 
         return $response->ok();
     }
+
+    // ===========================================
+    // Get a user details with retry atempts
+    // ===========================================
 
     public function getUserWithRetry(int $id): array
     {
@@ -92,6 +104,10 @@ class JsonPlaceholderService
         return $response->json();
     }
 
+    // ===============================
+    // Run synchronous process
+    // ===============================
+
     public function runSyncProcess(): array
     {
         $result = Process::run('echo "Laravel Processes work!"');
@@ -105,43 +121,9 @@ class JsonPlaceholderService
         ];
     }
 
-    public function listDirectory(string $dir = '/tmp'): string
-    {
-        $result = Process::path($dir)
-            ->timeout(30)
-            ->run('ls -la');
-
-        // Throw only if the process failed
-        $result->throwIf($result->failed());
-
-        return $result->output();
-    }
-
-    public function runWithEnv(): array
-    {
-        $result = Process::env([
-            'API_BASE' => $this->baseUrl,
-            'APP_ENV' => app()->environment(),
-        ])
-            ->timeout(30)
-            ->run('printenv API_BASE');
-
-        return [
-            'successful' => $result->successful(),
-            'output' => trim($result->output()),
-        ];
-    }
-
-    public function streamProcessOutput(): array
-    {
-        $result = Process::run('for i in 1 2 3; do echo "Line $i"; done');
-
-        return array_values(
-            array_filter(
-                array_map('trim', explode("\n", $result->output()))
-            )
-        );
-    }
+    // ====================================
+    // Run asynchronous process
+    // ====================================
 
     public function runAsyncProcess(): array
     {
@@ -161,6 +143,10 @@ class JsonPlaceholderService
         ];
     }
 
+    // ===========================================
+    // For running 3 processes at the same time
+    // ===========================================
+
     public function runConcurrentProcesses(): array
     {
         [$posts, $users, $todos] = Process::concurrently(function (\Illuminate\Process\Pool $pool) {
@@ -175,6 +161,10 @@ class JsonPlaceholderService
             'todos' => json_decode($todos->output(), true),
         ];
     }
+
+    // =====================================
+    // Fetching and processing data
+    // =====================================
 
     public function fetchAndProcessWithShell(int $userId): array
     {

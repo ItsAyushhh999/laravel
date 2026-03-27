@@ -91,18 +91,6 @@ test('it runs a sync process', function () {
         ->assertJsonPath('output', 'Laravel Processes work!');
 });
 
-test('it streams process output', function () {
-    Process::fake([
-        '*' => Process::result("Line 1\nLine 2\nLine 3", '', 0),
-    ]);
-
-    $response = $this->getJson('/api/placeholder/process/stream');
-
-    $response->assertOk()
-        ->assertJsonCount(3)
-        ->assertJsonFragment(['Line 1']);
-});
-
 test('it runs async process while fetching api', function () {
     Process::fake([
         'sleep *' => Process::result(output: 'Async done', exitCode: 0),

@@ -30,7 +30,9 @@ class Task extends Model
         'creator_id',
     ];
 
-    // ─── Scopes ───────────────────────────────────────
+    // ========================================================
+    //  Scopes
+    // ========================================================
 
     public function scopeHighPriority(Builder $query): Builder
     {
@@ -67,7 +69,9 @@ class Task extends Model
         return $query->where('project_id', $projectId);
     }
 
-    // ─── Relationships ───────────────────────────────
+    // ===============================================================
+    //  Relationships
+    // ===============================================================
 
     public function project(): BelongsTo
     {

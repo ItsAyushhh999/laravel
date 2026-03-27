@@ -44,16 +44,6 @@ class JsonPlaceholderController extends Controller
         return response()->json($this->service->runSyncProcess());
     }
 
-    public function listDirectory(string $dir = '/tmp'): JsonResponse
-    {
-        return response()->json($this->service->listDirectory($dir));
-    }
-
-    public function processStream(): JsonResponse
-    {
-        return response()->json($this->service->streamProcessOutput());
-    }
-
     public function processAsync(): JsonResponse
     {
         return response()->json($this->service->runAsyncProcess());
